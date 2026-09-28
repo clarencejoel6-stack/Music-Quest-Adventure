@@ -1,0 +1,2209 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misi Not Muzik - Music Quest Adventure (Tahun 6)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Century Gothic', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 30%, #2c5364 60%, #1e3799 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            color: #ffffff;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 3D Isometric Campus Canvas Background */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* God Rays Background Effect */
+        .god-rays {
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.25) 0%, rgba(255, 215, 0, 0.1) 40%, rgba(10, 20, 50, 0) 75%);
+            animation: rotateRays 40s linear infinite;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        @keyframes rotateRays {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Grand 3D Game Arch Container (Inspired by Game UI Image) */
+        .game-wrapper {
+            width: 100%;
+            max-width: 950px;
+            position: relative;
+            z-index: 10;
+            margin: auto;
+            perspective: 1000px;
+        }
+
+        .grand-arch-frame {
+            background: linear-gradient(180deg, rgba(16, 37, 84, 0.96) 0%, rgba(11, 23, 58, 0.98) 100%);
+            border-radius: 28px;
+            box-shadow: 
+                0 0 0 4px #ffd700,
+                0 0 0 8px #132b60,
+                0 0 0 12px #00d2ff,
+                0 25px 50px rgba(0, 0, 0, 0.8),
+                0 0 40px rgba(0, 210, 255, 0.6);
+            position: relative;
+            padding: 25px 30px 30px 30px;
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 215, 0, 0.8);
+        }
+
+        /* Top Crest Shield */
+        .arch-top-crest {
+            position: absolute;
+            top: -42px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 110px;
+            height: 85px;
+            background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            z-index: 15;
+            border-top: 3px solid #fff;
+        }
+
+        .arch-top-crest-inner {
+            width: 90px;
+            height: 68px;
+            background: linear-gradient(135deg, #0052d4 0%, #4364f7 100%);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+        }
+
+        /* Glowing Corner Orbs */
+        .crystal-orb {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #00ffff, #0052d4 60%, #000);
+            box-shadow: 0 0 20px #00ffff, inset -5px -5px 10px rgba(0,0,0,0.5);
+            top: -20px;
+            z-index: 20;
+            animation: pulseOrb 3s infinite ease-in-out;
+            border: 2px solid #ffd700;
+        }
+
+        .orb-left { left: -15px; }
+        .orb-right { right: -15px; }
+
+        @keyframes pulseOrb {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px #00ffff); }
+            50% { transform: scale(1.1); filter: drop-shadow(0 0 25px #00ffff); }
+        }
+
+        /* Side Pillars Decorative Metallic Trims */
+        .pillar-trim-left, .pillar-trim-right {
+            position: absolute;
+            top: 20px;
+            bottom: 20px;
+            width: 14px;
+            background: linear-gradient(180deg, #ffd700 0%, #b8860b 50%, #ffd700 100%);
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+            border-radius: 7px;
+        }
+        .pillar-trim-left { left: 8px; }
+        .pillar-trim-right { right: 8px; }
+
+        /* Neon Light Strip Effects */
+        .neon-strip {
+            position: absolute;
+            height: 3px;
+            background: #00d2ff;
+            box-shadow: 0 0 10px #00d2ff, 0 0 20px #00d2ff;
+            border-radius: 2px;
+        }
+
+        /* Screen Transitions */
+        .screen {
+            display: none;
+            animation: zoomIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Header Banners */
+        .game-title-header {
+            text-align: center;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+
+        .game-title-main {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(180deg, #ffffff 0%, #ffe066 50%, #ffa502 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 15px rgba(255, 165, 0, 0.5);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .game-title-sub {
+            font-size: 1.5rem;
+            color: #00d2ff;
+            font-weight: bold;
+            text-shadow: 0 0 12px rgba(0, 210, 255, 0.7);
+            letter-spacing: 0.5px;
+        }
+
+        /* 3D Game Buttons */
+        .btn-3d {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: #ffffff;
+            border-radius: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.15s ease-out;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            box-shadow: 0 6px 0px rgba(0,0,0,0.4), 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn-3d:hover {
+            transform: translateY(-3px);
+            filter: brightness(1.15);
+        }
+
+        .btn-3d:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0px rgba(0,0,0,0.4);
+        }
+
+        .btn-blue { background: linear-gradient(180deg, #4b7bec 0%, #3867d6 100%); border-color: #a55eea; }
+        .btn-green { background: linear-gradient(180deg, #2ed573 0%, #26af5f 100%); border-color: #7bed9f; }
+        .btn-gold { background: linear-gradient(180deg, #ffa502 0%, #e1b12c 100%); border-color: #ffeaa7; color: #2d3436; text-shadow: none; }
+        .btn-orange { background: linear-gradient(180deg, #ff7f50 0%, #ff6348 100%); border-color: #ffaa80; }
+        .btn-dark { background: linear-gradient(180deg, #4b6584 0%, #353b48 100%); border-color: #718093; }
+
+        /* Input Field Styling */
+        .input-card {
+            background: rgba(15, 32, 66, 0.85);
+            border: 2px solid #00d2ff;
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: inset 0 0 15px rgba(0, 210, 255, 0.2);
+            margin: 15px 0;
+        }
+
+        .game-input {
+            width: 100%;
+            background: #081126;
+            border: 2px solid #ffd700;
+            color: #ffffff;
+            padding: 12px 16px;
+            font-size: 1.1rem;
+            border-radius: 12px;
+            outline: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+
+        .game-input:focus {
+            border-color: #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+            background: #0d1d3f;
+        }
+
+        /* Quiz Cards & Matching UI */
+        .quiz-panel {
+            background: rgba(13, 27, 62, 0.9);
+            border: 2px solid #3867d6;
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background: linear-gradient(180deg, #1e3799 0%, #0c2461 100%);
+            border: 2px solid #4a69bd;
+            color: #ffffff;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .option-btn:hover {
+            border-color: #ffd700;
+            background: linear-gradient(180deg, #0c2461 0%, #1e3799 100%);
+            transform: translateY(-2px);
+        }
+
+        .option-btn.disabled-wrong {
+            background: linear-gradient(180deg, #eb4d4b 0%, #b33939 100%) !important;
+            border-color: #ff7979 !important;
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .option-btn.selected-correct {
+            background: linear-gradient(180deg, #6ab04c 0%, #44bd32 100%) !important;
+            border-color: #badc58 !important;
+            box-shadow: 0 0 20px #44bd32 !important;
+        }
+
+        /* Matching Item UI */
+        .match-card {
+            background: #0e2046;
+            border: 2px solid #4a69bd;
+            padding: 12px 15px;
+            border-radius: 14px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+            min-height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            color: #dff9fb;
+        }
+
+        .match-card:hover {
+            border-color: #00d2ff;
+            background: #1e3799;
+        }
+
+        .match-card.selected-left {
+            border-color: #e1b12c;
+            background: #e1b12c;
+            color: #1e272e;
+            box-shadow: 0 0 15px #e1b12c;
+        }
+
+        .match-card.matched {
+            background: #2f3640;
+            border-color: #718093;
+            color: #718093;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Music Audio Bar */
+        .audio-bar {
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            border-radius: 16px;
+            padding: 10px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        /* Reference Table Styling */
+        .game-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 15px 0;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid #3867d6;
+        }
+
+        .game-table th {
+            background: linear-gradient(180deg, #3867d6 0%, #1e3799 100%);
+            color: #ffffff;
+            padding: 12px;
+            font-size: 1rem;
+        }
+
+        .game-table td {
+            background: rgba(15, 32, 66, 0.9);
+            border-bottom: 1px solid #1e3799;
+            padding: 10px;
+            text-align: center;
+            color: #f1f2f6;
+        }
+
+        /* Modal Overlay for Admin Password */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-box {
+            background: linear-gradient(180deg, #0d1b3e 0%, #080f26 100%);
+            border: 3px solid #ffd700;
+            border-radius: 20px;
+            padding: 25px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+            text-align: center;
+        }
+
+        /* 3D Isometric Campus Intro Screen Styles (Inspired by image_b15219) */
+        .campus-intro-card {
+            background: linear-gradient(180deg, #1b3a70 0%, #0d1e42 100%);
+            border: 3px solid #ffd700;
+            border-radius: 24px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 35px rgba(0, 210, 255, 0.4);
+        }
+
+        .campus-school-building {
+            background: linear-gradient(180deg, #ffeaa7 0%, #fdcb6e 40%, #e17055 100%);
+            border: 3px solid #d63031;
+            border-radius: 16px;
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 8px 0 #b2bec3, 0 12px 20px rgba(0,0,0,0.5);
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        /* Superhero Squad Decorative Container */
+        .superhero-squad-bar {
+            background: linear-gradient(90deg, rgba(235, 77, 75, 0.25) 0%, rgba(9, 132, 227, 0.3) 50%, rgba(253, 203, 110, 0.25) 100%);
+            border: 2px solid #ffd700;
+            border-radius: 20px;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .hero-avatar-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease;
+            cursor: pointer;
+        }
+
+        .hero-avatar-card:hover {
+            transform: scale(1.12) translateY(-4px);
+        }
+
+        .hero-icon-bubble {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+            border: 2px solid #fff;
+            position: relative;
+        }
+
+        .school-crest {
+            background: #0984e3;
+            color: #ffd700;
+            padding: 4px 15px;
+            border-radius: 20px;
+            font-weight: 900;
+            font-size: 0.9rem;
+            display: inline-block;
+            border: 2px solid #fff;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+        }
+
+        /* Interactive Gate Portals */
+        .campus-gates-row {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 1fr;
+            gap: 12px;
+            align-items: center;
+            margin: 15px 0 25px 0;
+            position: relative;
+        }
+
+        @media (max-width: 640px) {
+            .campus-gates-row {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        .gate-portal-box {
+            background: rgba(15, 32, 66, 0.95);
+            border: 2px solid #00d2ff;
+            border-radius: 16px;
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
+            position: relative;
+        }
+
+        .gate-title-badge {
+            background: linear-gradient(90deg, #0984e3, #6c5ce7);
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 3px 10px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-bottom: 8px;
+            border: 1px solid #74b9ff;
+        }
+
+        /* Center Floating Master Key */
+        .master-key-container {
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .master-key-container:hover {
+            transform: scale(1.05);
+        }
+
+        .master-key-glow {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto;
+            background: radial-gradient(circle, #ffeaa7 0%, #fdcb6e 40%, #d63031 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 30px #ffd700, inset 0 0 15px #fff;
+            border: 4px solid #fff;
+            animation: floatKey 2.5s infinite ease-in-out;
+        }
+
+        @keyframes floatKey {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(4deg); }
+        }
+
+        .master-key-icon {
+            font-size: 3rem;
+            color: #2d3436;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
+        }
+
+        .key-prompt-btn {
+            background: linear-gradient(180deg, #00cec9 0%, #00b894 100%);
+            color: #ffffff;
+            font-weight: 900;
+            font-size: 0.85rem;
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 2px solid #fff;
+            box-shadow: 0 0 15px #00cec9, 0 4px 0 #006266;
+            display: inline-block;
+            margin-top: 10px;
+            animation: pulseGlow 1.8s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 10px #00cec9; }
+            50% { box-shadow: 0 0 25px #00cec9, 0 0 35px #00cec9; }
+        }
+
+        /* Cartoon Mascot Student & Speech Bubble */
+        .mascot-speech-container {
+            background: #ffffff;
+            border: 3px solid #0984e3;
+            border-radius: 18px;
+            padding: 14px 18px;
+            color: #2d3436;
+            font-weight: bold;
+            font-size: 0.95rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            position: relative;
+            margin-top: 10px;
+        }
+
+        .mascot-speech-container::after {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 0 12px 12px 12px;
+            border-style: solid;
+            border-color: transparent transparent #ffffff transparent;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Dynamic 3D Isometric Background Canvas -->
+<canvas id="bg-canvas"></canvas>
+<div class="god-rays"></div>
+
+<!-- GRAND GAME ARCH FRAME CONTAINER -->
+<div class="game-wrapper">
+    
+    <!-- Arch Crest Top Shield -->
+    <div class="arch-top-crest">
+        <div class="arch-top-crest-inner">
+            <i class="fa-solid fa-music"></i>
+        </div>
+    </div>
+
+    <!-- Side Crystal Orbs -->
+    <div class="crystal-orb orb-left"></div>
+    <div class="crystal-orb orb-right"></div>
+
+    <!-- Main Game Arch Frame -->
+    <div class="grand-arch-frame">
+        <div class="pillar-trim-left"></div>
+        <div class="pillar-trim-right"></div>
+
+        <!-- Background Music Player Bar -->
+        <div class="audio-bar">
+            <div class="flex items-center gap-2 text-yellow-300 font-bold text-sm overflow-hidden">
+                <i class="fa-solid fa-compact-disc fa-spin text-xl flex-shrink-0"></i>
+                <span id="currentTrackDisplay" class="truncate max-w-[140px] sm:max-w-[220px]">Latar Muzik Permainan</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+                <!-- Audio player without loop attribute so ended event fires to trigger next track in setlist -->
+                <audio id="bgAudio" prefetch>
+                    <source src="audio/bg_music.mp3" type="audio/mpeg">
+                    <source src="bg_music.mp3" type="audio/mpeg">
+                </audio>
+                <button onclick="playPrevTrack()" title="Lagu Sebelum" class="bg-yellow-600/80 hover:bg-yellow-500 text-white px-2 py-1.5 rounded-lg text-xs font-bold transition shadow border border-yellow-400/40">
+                    <i class="fa-solid fa-backward-step"></i>
+                </button>
+                <button onclick="playNextTrack()" title="Lagu Seterusnya" class="bg-yellow-600/80 hover:bg-yellow-500 text-white px-2 py-1.5 rounded-lg text-xs font-bold transition shadow border border-yellow-400/40">
+                    <i class="fa-solid fa-forward-step"></i>
+                </button>
+                <button id="musicToggleBtn" onclick="toggleBgMusic()" class="bg-green-500 hover:bg-green-400 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow">
+                    <i class="fa-solid fa-volume-high" id="musicIcon"></i> <span id="musicText">Muzik: ON</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- PAPARAN 0: MUKA DEPAN KAMPUS (ISOMETRIC INTRO SCREEN) -->
+        <div id="screen-campus-intro" class="screen active">
+            <div class="campus-intro-card">
+                <!-- School Facade Banner -->
+                <div class="campus-school-building">
+                    <h2 class="text-xl font-black text-gray-900 tracking-wide uppercase">AKADEMI MUZIK DIGITAL</h2>
+                    <p class="text-xs text-gray-800 font-bold">Misi Not Muzik - Music Quest Adventure (Tahun 6)</p>
+                </div>
+
+                <!-- SUPERHERO & KIDS SQUAD BANNER -->
+                <div class="superhero-squad-bar">
+                    <!-- Spider-Man Avatar -->
+                    <div class="hero-avatar-card" title="Spider-Man">
+                        <div class="hero-icon-bubble bg-gradient-to-b from-red-600 to-red-800 border-red-300">
+                            <svg width="32" height="32" viewBox="0 0 100 100">
+                                <ellipse cx="50" cy="50" rx="44" ry="46" fill="#e74c3c" stroke="#111" stroke-width="4"/>
+                                <path d="M 50 4 L 50 96 M 6 50 L 94 50 M 16 18 L 84 82 M 16 82 L 84 18" stroke="#111" stroke-width="2.5" opacity="0.6"/>
+                                <path d="M 18 42 Q 35 24 46 44 Q 34 58 18 42 Z" fill="#fff" stroke="#111" stroke-width="4"/>
+                                <path d="M 82 42 Q 65 24 54 44 Q 66 58 82 42 Z" fill="#fff" stroke="#111" stroke-width="4"/>
+                            </svg>
+                        </div>
+                        <span class="text-[10px] font-black text-red-300 mt-1 uppercase tracking-wider">Spider-Man</span>
+                    </div>
+
+                    <!-- Captain America Shield Avatar -->
+                    <div class="hero-avatar-card" title="Captain Muzik">
+                        <div class="hero-icon-bubble bg-blue-600 border-yellow-300">
+                            <svg width="30" height="30" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="46" fill="#e74c3c"/>
+                                <circle cx="50" cy="50" r="35" fill="#ffffff"/>
+                                <circle cx="50" cy="50" r="24" fill="#e74c3c"/>
+                                <circle cx="50" cy="50" r="14" fill="#0984e3"/>
+                                <polygon points="50,38 53,46 62,46 55,51 58,59 50,54 42,59 45,51 38,46 47,46" fill="#ffffff"/>
+                            </svg>
+                        </div>
+                        <span class="text-[10px] font-black text-cyan-300 mt-1 uppercase tracking-wider">Captain</span>
+                    </div>
+
+                    <!-- Cartoon Boy Student Avatar -->
+                    <div class="hero-avatar-card" title="Wira Muda">
+                        <div class="hero-icon-bubble bg-amber-400 border-amber-200 text-2xl">
+                            👦
+                        </div>
+                        <span class="text-[10px] font-black text-yellow-300 mt-1 uppercase tracking-wider">Wira Murid</span>
+                    </div>
+
+                    <!-- Cartoon Girl Student Avatar -->
+                    <div class="hero-avatar-card" title="Wira Srikandi">
+                        <div class="hero-icon-bubble bg-pink-500 border-pink-200 text-2xl">
+                            👧
+                        </div>
+                        <span class="text-[10px] font-black text-pink-300 mt-1 uppercase tracking-wider">Srikandi</span>
+                    </div>
+
+                    <!-- Wonder Superhero Avatar -->
+                    <div class="hero-avatar-card" title="Super Girl">
+                        <div class="hero-icon-bubble bg-purple-600 border-yellow-300 text-2xl">
+                            🦸‍♀️
+                        </div>
+                        <span class="text-[10px] font-black text-purple-300 mt-1 uppercase tracking-wider">Super Girl</span>
+                    </div>
+                </div>
+
+                <!-- Interactive Campus Gates & Floating Master Key -->
+                <div class="campus-gates-row">
+                    <!-- Left Gate: Gerbang Kelas -->
+                    <div class="gate-portal-box cursor-pointer hover:border-yellow-400 transition" onclick="enterFromCampus()">
+                        <div class="gate-title-badge"><i class="fa-solid fa-door-open mr-1"></i> GERBANG KELAS</div>
+                        <div class="text-4xl my-2 text-cyan-300"><i class="fa-solid fa-graduation-cap"></i></div>
+                        <p class="text-[11px] text-blue-200 font-semibold">Pendaftaran Nama & Kelas Murid</p>
+                    </div>
+
+                    <!-- Center Master Key Floating Interactive Trigger -->
+                    <div class="master-key-container" onclick="enterFromCampus()">
+                        <div class="master-key-glow">
+                            <i class="fa-solid fa-key master-key-icon"></i>
+                        </div>
+                        <div class="key-prompt-btn">
+                            <i class="fa-solid fa-hand-pointer mr-1"></i> KLIK KUNCI PINTAR
+                        </div>
+                    </div>
+
+                    <!-- Right Gate: Portal Classroom -->
+                    <div class="gate-portal-box cursor-pointer hover:border-yellow-400 transition" onclick="enterFromCampus()">
+                        <div class="gate-title-badge !bg-emerald-600"><i class="fa-solid fa-globe mr-1"></i> PORTAL MUZIK</div>
+                        <div class="text-4xl my-2 text-emerald-300"><i class="fa-solid fa-icons"></i></div>
+                        <p class="text-[11px] text-emerald-200 font-semibold">Ruang Cabaran Notasi Digital</p>
+                    </div>
+                </div>
+
+                <!-- Student & Superhero Mascot Speech Dialogue -->
+                <div class="flex items-center gap-3">
+                    <div class="text-5xl flex-shrink-0 animate-bounce">
+                        🕷️
+                    </div>
+                    <div class="mascot-speech-container flex-grow">
+                        <span class="text-red-600 font-extrabold mr-1">🕸️ Spider-Man & Maskot Muzik:</span> 
+                        "Hai Wira Tahun 6! Bersama Spider-Man dan Skuad Superhero, marilah kita menakluki Misi Not Muzik! <span class="text-blue-600 font-black underline cursor-pointer" onclick="enterFromCampus()">Klik Kunci Pintar</span> di tengah sekarang!"
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button class="btn-3d btn-green text-lg" onclick="enterFromCampus()">
+                    <i class="fa-solid fa-right-to-bracket"></i> MASUK KE MUKA HADAPAN PERMAINAN
+                </button>
+            </div>
+        </div>
+
+        <!-- PAPARAN 1: MUKA HADAPAN -->
+        <div id="screen-home" class="screen">
+            <div class="game-title-header">
+                <div class="inline-block bg-yellow-500/20 text-yellow-300 px-4 py-1 rounded-full text-xs font-bold mb-2 border border-yellow-500/40">
+                    Pendidikan Muzik | Topik: Notasi Muzik | Tahun 6
+                </div>
+                <h1 class="game-title-main">MISI NOT MUZIK</h1>
+                <h2 class="game-title-sub"><i class="fa-solid fa-crown mr-2 text-yellow-400"></i>MUSIC QUEST ADVENTURE</h2>
+                <p class="text-xs text-cyan-200 mt-1 italic font-semibold">Kuiz Interaktif Digital Pendidikan Muzik Sekolah Rendah</p>
+            </div>
+
+            <!-- Superhero & Kids Banner Display on Home Screen -->
+            <div class="flex items-center justify-center gap-3 bg-gradient-to-r from-blue-900/90 via-indigo-900/90 to-purple-900/90 p-3 rounded-2xl border-2 border-yellow-400 mb-4 shadow-lg text-center">
+                <span class="text-3xl">🕷️</span>
+                <span class="text-3xl">🦸‍♂️</span>
+                <div class="text-xs font-bold text-yellow-300">
+                    <span class="text-red-400 font-black text-sm">SKUAD SUPERHERO & KANAK-KANAK MUZIK</span><br>
+                    Sertai Spider-Man & Kawan-Kawan Menyelesaikan Misi Notasi Muzik!
+                </div>
+                <span class="text-3xl">👧</span>
+                <span class="text-3xl">🦸‍♀️</span>
+            </div>
+
+            <!-- Student Registration Form -->
+            <div class="input-card">
+                <div class="mb-4">
+                    <label class="block text-yellow-300 text-sm font-bold mb-1">
+                        ⭐ NAMA MURID (WAJIB ISI) *
+                    </label>
+                    <input type="text" id="studentName" placeholder="CONTOH: AMIRAH BINTI AHMAD" class="game-input" oninput="this.value = this.value.toUpperCase()">
+                </div>
+                <div class="mb-2">
+                    <label class="block text-yellow-300 text-sm font-bold mb-1">
+                        ⭐ KELAS (WAJIB ISI) *
+                    </label>
+                    <input type="text" id="studentClass" placeholder="CONTOH: 6 CEKAL" class="game-input" oninput="this.value = this.value.toUpperCase()">
+                </div>
+                <div id="homeError" class="text-red-400 font-bold text-center text-sm mt-3 hidden bg-red-950/60 p-2 rounded-lg border border-red-500">
+                    <i class="fa-solid fa-triangle-exclamation mr-1"></i> Sila isi nama murid dan kelas terlebih dahulu.
+                </div>
+            </div>
+
+            <!-- Home Buttons -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
+                <button class="btn-3d btn-green md:col-span-2 text-lg" onclick="startGame()">
+                    <i class="fa-solid fa-play"></i> MULA PERMAINAN
+                </button>
+                <button class="btn-3d btn-gold" onclick="playSfx('click'); showScreen('screen-notes')">
+                    <i class="fa-solid fa-book-open"></i> NOTA & RUJUKAN MUZIK
+                </button>
+                <button class="btn-3d btn-orange" onclick="playSfx('click'); showScreen('screen-rules')">
+                    <i class="fa-solid fa-scroll"></i> PERATURAN DAN SYARAT
+                </button>
+                <button class="btn-3d btn-blue" onclick="playSfx('click'); showScreen('screen-developer')">
+                    <i class="fa-solid fa-user-astronaut"></i> MAKLUMAT PEMBANGUN
+                </button>
+                <button class="btn-3d btn-dark" onclick="openAdminModal()">
+                    <i class="fa-solid fa-user-shield"></i> PAPARAN ADMIN
+                </button>
+                <button class="btn-3d btn-dark md:col-span-2" onclick="playSfx('click'); showScreen('screen-campus-intro')">
+                    <i class="fa-solid fa-arrow-left"></i> KEMBALI KE KAMPUS
+                </button>
+            </div>
+        </div>
+
+        <!-- PAPARAN 2: NOTA & RUJUKAN MUZIK -->
+        <div id="screen-notes" class="screen">
+            <h2 class="text-2xl font-bold text-center text-yellow-300 mb-1"><i class="fa-solid fa-graduation-cap mr-2"></i>SUDUT NOTA & RUJUKAN MUZIK</h2>
+            <p class="text-xs text-center text-blue-200 mb-3">Rujuk jadual Notasi Muzik di bawah sebelum memulakan ujian!</p>
+            
+            <!-- Jadual Notasi Muzik Mengikut Gambar Rujukan -->
+            <div class="rounded-2xl overflow-hidden border-2 border-blue-400/80 mb-4 shadow-2xl bg-gradient-to-b from-blue-900 via-indigo-950 to-slate-950 p-1">
+                <table class="w-full border-collapse text-white text-center">
+                    <thead>
+                        <tr class="bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 text-white font-extrabold text-sm sm:text-base border-b-2 border-blue-400/50">
+                            <th class="py-3 px-2 w-1/4">Nama Not</th>
+                            <th class="py-3 px-2 w-1/4">Bentuk Not</th>
+                            <th class="py-3 px-2 w-1/4">Tanda Istirahat</th>
+                            <th class="py-3 px-2 w-1/4">Nilai</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-blue-800/60 font-bold text-sm sm:text-base bg-blue-950/70">
+                        <!-- Semibrif -->
+                        <tr class="hover:bg-blue-900/40 transition">
+                            <td class="py-3 px-2 font-extrabold">Semibrif</td>
+                            <td class="py-3 px-2">
+                                <svg width="32" height="24" viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="3.5" class="inline-block text-white">
+                                    <ellipse cx="16" cy="12" rx="11" ry="7" transform="rotate(-15 16 12)"/>
+                                </svg>
+                            </td>
+                            <td class="py-3 px-2">
+                                <svg width="36" height="24" viewBox="0 0 36 24" fill="currentColor" class="inline-block text-white">
+                                    <line x1="4" y1="8" x2="32" y2="8" stroke="currentColor" stroke-width="3"/>
+                                    <rect x="11" y="8" width="14" height="7"/>
+                                </svg>
+                            </td>
+                            <td class="py-3 px-2 font-black text-xl">4</td>
+                        </tr>
+                        <!-- Minim -->
+                        <tr class="hover:bg-blue-900/40 transition">
+                            <td class="py-3 px-2 font-extrabold">Minim</td>
+                            <td class="py-3 px-2">
+                                <svg width="24" height="34" viewBox="0 0 24 34" fill="none" stroke="currentColor" class="inline-block text-white">
+                                    <ellipse cx="8" cy="23" rx="6.5" ry="4.5" transform="rotate(-20 8 23)" stroke-width="3"/>
+                                    <line x1="14" y1="21" x2="14" y2="3" stroke-width="3" stroke-linecap="round"/>
+                                </svg>
+                            </td>
+                            <td class="py-3 px-2">
+                                <svg width="36" height="24" viewBox="0 0 36 24" fill="currentColor" class="inline-block text-white">
+                                    <line x1="4" y1="16" x2="32" y2="16" stroke="currentColor" stroke-width="3"/>
+                                    <rect x="11" y="9" width="14" height="7"/>
+                                </svg>
+                            </td>
+                            <td class="py-3 px-2 font-black text-xl">2</td>
+                        </tr>
+                        <!-- Krocet -->
+                        <tr class="hover:bg-blue-900/40 transition">
+                            <td class="py-3 px-2 font-extrabold">Krocet</td>
+                            <td class="py-3 px-2">
+                                <svg width="24" height="34" viewBox="0 0 24 34" fill="currentColor" class="inline-block text-white">
+                                    <ellipse cx="8" cy="23" rx="6.5" ry="4.5" transform="rotate(-20 8 23)"/>
+                                    <line x1="14" y1="21" x2="14" y2="3" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                                </svg>
+                            </td>
+                            <td class="py-3 px-2">
+                                <svg width="20" height="32" viewBox="0 0 20 32" fill="currentColor" class="inline-block text-white">
+                                    <path d="M10 2 C13 5, 14 8, 11 11 C8 14, 6 16, 9 19 C12 22, 12 25, 8 29 C7 30, 6 30, 5 31 C7 28, 8 26, 6 23 C4 20, 3 18, 6 15 C9 12, 10 10, 7 7 C6 6, 6 4, 10 2 Z"/>
+                                </svg>
+                            </td>
+                            <td class="py-3 px-2 font-black text-xl">1</td>
+                        </tr>
+                        <!-- Kuaver -->
+                        <tr class="hover:bg-blue-900/40 transition">
+                            <td class="py-3 px-2 font-extrabold">Kuaver</td>
+                            <td class="py-3 px-2">
+                                <svg width="28" height="34" viewBox="0 0 28 34" fill="currentColor" class="inline-block text-white">
+                                    <ellipse cx="8" cy="23" rx="6.5" ry="4.5" transform="rotate(-20 8 23)"/>
+                                    <line x1="14" y1="21" x2="14" y2="3" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                                    <path d="M14 3 C 20 6, 22 11, 22 17 C 19 12, 16 10, 14 9 Z"/>
+                                </svg>
+                            </td>
+                            <td class="py-3 px-2">
+                                <svg width="22" height="32" viewBox="0 0 22 32" fill="currentColor" class="inline-block text-white">
+                                    <circle cx="8" cy="9" r="3"/>
+                                    <path d="M8 9 Q 14 10 13 13 L 8 27" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
+                                </svg>
+                            </td>
+                            <td class="py-3 px-2 font-black text-xl">½</td>
+                        </tr>
+                        <!-- Krocet bertitik -->
+                        <tr class="hover:bg-blue-900/40 transition">
+                            <td class="py-3 px-2 font-extrabold">Krocet bertitik</td>
+                            <td class="py-3 px-2">
+                                <svg width="32" height="34" viewBox="0 0 32 34" fill="currentColor" class="inline-block text-white">
+                                    <ellipse cx="8" cy="23" rx="6.5" ry="4.5" transform="rotate(-20 8 23)"/>
+                                    <line x1="14" y1="21" x2="14" y2="3" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                                    <circle cx="22" cy="23" r="3"/>
+                                </svg>
+                            </td>
+                            <td class="py-3 px-2">
+                                <svg width="32" height="32" viewBox="0 0 32 32" fill="currentColor" class="inline-block text-white">
+                                    <path d="M10 2 C13 5, 14 8, 11 11 C8 14, 6 16, 9 19 C12 22, 12 25, 8 29 C7 30, 6 30, 5 31 C7 28, 8 26, 6 23 C4 20, 3 18, 6 15 C9 12, 10 10, 7 7 C6 6, 6 4, 10 2 Z"/>
+                                    <circle cx="22" cy="23" r="3"/>
+                                </svg>
+                            </td>
+                            <td class="py-3 px-2 font-black text-xl">1 ½</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="bg-blue-900/60 p-3 rounded-xl border border-blue-400/40 text-xs leading-relaxed space-y-1 mb-4">
+                <p>🎼 <b>Clef Trebel & Balap:</b> Balap muzik mengandungi <b>5 garisan selari</b> dan <b>4 ruang</b>.</p>
+                <p>📍 <b>Not Garisan:</b> E, G, B, D, F | <b>Not Ruang:</b> F, A, C, E</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <button class="btn-3d btn-gold" onclick="playSfx('click'); showScreen('screen-menu')">
+                    <i class="fa-solid fa-arrow-left"></i> MENU UJIAN
+                </button>
+                <button class="btn-3d btn-dark" onclick="playSfx('click'); showScreen('screen-home')">
+                    <i class="fa-solid fa-house"></i> MUKA HADAPAN
+                </button>
+            </div>
+        </div>
+
+        <!-- PAPARAN 3: PERATURAN DAN SYARAT -->
+        <div id="screen-rules" class="screen">
+            <h2 class="text-2xl font-bold text-center text-yellow-300 mb-4"><i class="fa-solid fa-clipboard-list mr-2"></i>PERATURAN DAN SYARAT PERMAINAN</h2>
+            <div class="bg-blue-950/80 p-4 rounded-xl border border-blue-500/40 text-sm leading-relaxed space-y-2 mb-4 text-blue-100">
+                <p>1. Permainan ini khusus untuk murid <b>Tahun 6</b> berdasarkan DSKP Pendidikan Muzik.</p>
+                <p>2. Murid wajib memasukkan <b>Nama</b> dan <b>Kelas</b> mengikut format huruf besar.</p>
+                <p>3. <b>Ujian 1 (Cabaran Not Muzik):</b> 25 soalan objektif (2 mata setiap soalan = 50 mata). 
+                   <br><span class="text-yellow-300"> Sila pilih jawapan anda bagi setiap soalan dan teruskan ke soalan seterusnya.</span>
+                </p>
+                <p>4. <b>Ujian 2 (Misi Padanan Muzik):</b> 5 tugasan padanan interaktif (10 mata setiap tugasan = 50 mata).</p>
+                <p>5. Jumlah skor maksimum keseluruhan ialah <b>100 Mata</b>.</p>
+            </div>
+            <button class="btn-3d btn-dark" onclick="playSfx('click'); showScreen('screen-home')">
+                <i class="fa-solid fa-house"></i> KEMBALI KE MUKA HADAPAN
+            </button>
+        </div>
+
+        <!-- PAPARAN 4: MENU PEMILIHAN UJIAN -->
+        <div id="screen-menu" class="screen">
+            <h2 id="welcomeGreeting" class="text-2xl font-extrabold text-center text-yellow-300 mb-2"></h2>
+            <p class="text-center text-sm text-blue-200 mb-5">Pilih salah satu mod ujian di bawah untuk memulakan misi anda!</p>
+            
+            <div class="space-y-3">
+                <button class="btn-3d btn-gold" onclick="playSfx('click'); showScreen('screen-notes')">
+                    <i class="fa-solid fa-book-open"></i> OPTION A: NOTA & RUJUKAN MUZIK
+                </button>
+                <button class="btn-3d btn-green" id="btn-test1" onclick="startQuiz1()">
+                    <i class="fa-solid fa-pen-to-square"></i> OPTION B: UJIAN 1 (Cabaran Not Muzik - 25 Soalan)
+                </button>
+                <button class="btn-3d btn-orange" id="btn-test2" onclick="startQuiz2()">
+                    <i class="fa-solid fa-puzzle-piece"></i> OPTION C: UJIAN 2 (Misi Padanan Muzik)
+                </button>
+                <button class="btn-3d btn-dark" onclick="playSfx('click'); showScreen('screen-home')">
+                    <i class="fa-solid fa-house"></i> MUKA HADAPAN
+                </button>
+            </div>
+        </div>
+
+        <!-- PAPARAN 5: UJIAN 1 (SOALAN OBJEKTIF 25 SOALAN) -->
+        <div id="screen-quiz1" class="screen">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-lg font-bold text-yellow-300"><i class="fa-solid fa-bullseye mr-2"></i>UJIAN 1: Cabaran Not Muzik</h3>
+                <span id="q1-progress" class="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full border border-blue-400">
+                    Soalan 1/25
+                </span>
+            </div>
+            
+            <div class="quiz-panel">
+                <p id="q1-text" class="text-lg font-bold text-white mb-4 leading-snug"></p>
+                <div id="q1-options" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+                
+                <div id="q1-feedback" class="mt-4 p-3 rounded-xl font-bold text-center text-sm hidden"></div>
+            </div>
+
+            <div class="flex gap-2">
+                <button class="btn-3d btn-dark w-1/3" onclick="confirmExitQuiz()">
+                    <i class="fa-solid fa-arrow-left"></i> KEMBALI
+                </button>
+                <button id="q1-next-btn" class="btn-3d btn-green w-2/3 hidden" onclick="nextQuiz1Question()">
+                    SETERUSNYA <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- PAPARAN 6: UJIAN 2 (PADANAN INTERAKTIF) -->
+        <div id="screen-quiz2" class="screen">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-lg font-bold text-yellow-300"><i class="fa-solid fa-puzzle-piece mr-2"></i>UJIAN 2: Misi Padanan Muzik</h3>
+                <span id="q2-progress" class="bg-orange-600 text-white text-xs font-bold px-3 py-1 rounded-full border border-orange-400">
+                    Tugasan 1/5
+                </span>
+            </div>
+
+            <p id="q2-instruction" class="text-sm font-bold text-center text-cyan-300 mb-3"></p>
+            
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div id="matching-left" class="space-y-2"></div>
+                <div id="matching-right" class="space-y-2"></div>
+            </div>
+
+            <div id="q2-feedback" class="p-3 rounded-xl font-bold text-center text-sm hidden mb-3"></div>
+
+            <div class="flex gap-2">
+                <button class="btn-3d btn-dark w-1/3" onclick="confirmExitQuiz()">
+                    <i class="fa-solid fa-arrow-left"></i> KEMBALI
+                </button>
+                <button id="q2-next-btn" class="btn-3d btn-green w-2/3 hidden" onclick="nextQuiz2Question()">
+                    SETERUSNYA <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- PAPARAN 8: TAMAT PERMAINAN & KEPUTUSAN KESELURUHAN -->
+        <div id="screen-final-result" class="screen">
+            <h1 class="text-3xl font-black text-center text-yellow-300 mb-1">🎉 TAHNIAH! MISI SELESAI! 🎉</h1>
+            <p class="text-center text-xs text-blue-200 mb-4">Kamu telah berjaya menyelesaikan keseluruhan pengembaraan Music Quest Adventure!</p>
+            
+            <div class="bg-gradient-to-b from-yellow-500/20 to-orange-500/20 border-2 border-dashed border-yellow-400 p-4 rounded-2xl text-center mb-4">
+                <div id="finalBadgeIcon" class="text-6xl mb-2">🏆</div>
+                <div id="finalBadgeTitle" class="text-xl font-bold text-yellow-300">Lencana Wira Not Muzik</div>
+                <p id="finalBadgeDesc" class="text-xs text-blue-100 mt-1 font-semibold"></p>
+            </div>
+
+            <div class="bg-blue-950/80 p-4 rounded-xl border border-blue-500/40 text-sm space-y-1 mb-4">
+                <p><b>Nama Murid:</b> <span id="resStudentName" class="text-yellow-300">-</span></p>
+                <p><b>Kelas:</b> <span id="resStudentClass" class="text-yellow-300">-</span></p>
+                <p><b>Skor Ujian 1 (Objektif):</b> <span id="resScore1" class="text-green-400">0</span> / 50</p>
+                <p><b>Skor Ujian 2 (Padanan):</b> <span id="resScore2" class="text-green-400">0</span> / 50</p>
+                <hr class="border-blue-700 my-2">
+                <p class="text-base font-bold text-yellow-300">
+                    Jumlah Skor Keseluruhan: <span id="resTotalScore" class="text-green-300">0</span> / 100 (<span id="resTotalPercent">0%</span>)
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <button class="btn-3d btn-green" onclick="playSfx('click'); showScreen('screen-menu')">
+                    <i class="fa-solid fa-gamepad"></i> MENU UJIAN
+                </button>
+                <button class="btn-3d btn-dark" onclick="playSfx('click'); showScreen('screen-home')">
+                    <i class="fa-solid fa-house"></i> MUKA HADAPAN
+                </button>
+            </div>
+        </div>
+
+        <!-- PAPARAN 9: PAPARAN ADMIN -->
+        <div id="screen-admin" class="screen">
+            <h2 class="text-2xl font-bold text-center text-yellow-300 mb-2"><i class="fa-solid fa-user-shield mr-2"></i>PAPARAN REKOD ADMIN</h2>
+            
+            <!-- Admin Audio Upload Section -->
+            <div class="bg-gradient-to-r from-blue-900/80 to-indigo-900/80 p-4 rounded-xl border-2 border-yellow-400 mb-4 shadow-lg text-xs leading-relaxed space-y-2">
+                <div class="flex items-center justify-between border-b border-yellow-400/30 pb-2 mb-2">
+                    <span class="text-yellow-300 font-bold text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-list-ol text-base"></i> Pengurusan Setlist Lagu Latar Permainan (Guru)
+                    </span>
+                    <span id="audioSourceBadge" class="bg-blue-600 text-yellow-200 px-2.5 py-0.5 rounded-full font-semibold">
+                        Lagu Asal
+                    </span>
+                </div>
+                <p class="text-blue-200">
+                    Muat naik fail-fail MP3 di sini. Anda boleh memilih <b>banyak fail sekaligus</b> untuk dijadikan setlist lagu. Lagu-lagu ini akan dimainkan secara berterusan (berurutan) untuk semua murid semasa mereka menjawab kuiz!
+                </p>
+                <div class="flex flex-wrap items-center gap-2 pt-1">
+                    <label for="adminAudioInput" class="cursor-pointer bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-400 hover:to-amber-400 text-gray-900 font-bold px-3.5 py-2 rounded-lg text-xs transition flex items-center gap-1.5 shadow">
+                        <i class="fa-solid fa-cloud-arrow-up text-sm"></i> Muat Naik Setlist MP3 (Boleh Pilih Banyak)
+                    </label>
+                    <input type="file" id="adminAudioInput" accept="audio/*" multiple class="hidden" onchange="handleAdminAudioUpload(event)">
+                    
+                    <button onclick="resetAdminAudio()" class="bg-red-600/80 hover:bg-red-500 text-white font-bold px-3 py-2 rounded-lg text-xs transition flex items-center gap-1">
+                        <i class="fa-solid fa-rotate-left"></i> Padam Semua & Set Semula
+                    </button>
+                </div>
+                <div id="adminAudioCurrentInfo" class="text-cyan-300 font-semibold pt-1">
+                    📌 Status Setlist: Fail laluan asal (audio/bg_music.mp3)
+                </div>
+                
+                <!-- Display Playlist Table in Admin -->
+                <div id="adminPlaylistContainer" class="mt-2 space-y-1 max-h-36 overflow-y-auto pr-1 hidden">
+                    <div class="text-yellow-300 font-bold text-xs mb-1">🎶 Senarai Lagu Dalam Setlist:</div>
+                    <div id="adminPlaylistItems" class="space-y-1"></div>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto mb-4">
+                <table class="game-table">
+                    <thead>
+                        <tr>
+                            <th>Bil</th>
+                            <th>Nama Murid</th>
+                            <th>Kelas</th>
+                            <th>Ujian 1</th>
+                            <th>Ujian 2</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminTableBody">
+                        <tr><td colspan="5">Tiada rekod murid lagi.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <button class="btn-3d btn-dark" onclick="playSfx('click'); showScreen('screen-home')">
+                <i class="fa-solid fa-right-from-bracket"></i> KELUAR ADMIN & MUKA HADAPAN
+            </button>
+        </div>
+
+        <!-- PAPARAN 10: MAKLUMAT PEMBANGUN -->
+        <div id="screen-developer" class="screen">
+            <h2 class="text-2xl font-bold text-center text-yellow-300 mb-4"><i class="fa-solid fa-laptop-code mr-2"></i>MAKLUMAT PEMBANGUN</h2>
+            <div class="bg-blue-950/80 p-5 rounded-2xl border border-blue-500/40 text-sm leading-relaxed space-y-2 mb-5">
+                <p><b>Pembangun :</b> Clarence Joel Kenneth</p>
+                <p><b>Pengkhususan :</b> Pendidikan Muzik</p>
+                <p><b>Sekolah :</b> Institut Pendidikan Guru Kampus Ilmu Khas</p>
+                <p><b>Email :</b> g-ipgp24175605@moe-dl.edu.my</p>
+            </div>
+            <button class="btn-3d btn-dark" onclick="playSfx('click'); showScreen('screen-home')">
+                <i class="fa-solid fa-house"></i> KEMBALI KE MUKA HADAPAN
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<!-- Custom Admin Modal Password Window -->
+<div id="adminModal" class="modal-overlay">
+    <div class="modal-box">
+        <h3 class="text-xl font-bold text-yellow-300 mb-3"><i class="fa-solid fa-lock mr-2"></i>Akses Pentadbir</h3>
+        <p class="text-xs text-blue-200 mb-4">Sila masukkan kata laluan Admin (0000):</p>
+        <input type="password" id="adminPassInput" class="game-input text-center text-xl mb-3" placeholder="••••">
+        <div id="adminPassError" class="text-red-400 text-xs font-bold mb-3 hidden">Kata laluan salah!</div>
+        <div class="grid grid-cols-2 gap-2">
+            <button class="btn-3d btn-green" onclick="verifyAdminPassword()"><i class="fa-solid fa-check"></i> MASUK</button>
+            <button class="btn-3d btn-dark" onclick="closeAdminModal()"><i class="fa-solid fa-xmark"></i> BATAL</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmExitQuiz() {
+        playSfx('click');
+        showScreen('screen-menu');
+    }
+
+    // --- WEB AUDIO API SOUND GENERATOR ---
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    // --- CAMPUS INTRO NAVIGATION ---
+    function enterFromCampus() {
+        playSfx('click');
+        playBgAudio();
+        showScreen('screen-home');
+    }
+
+    // --- SETLIST / PLAYLIST AUTOMATIC AUDIO ENGINE ---
+    const bgAudio = document.getElementById('bgAudio');
+    let isMusicPlaying = false;
+    let playlist = []; // Array of audio objects { name: string, type: string, buffer: ArrayBuffer, blobUrl: string }
+    let currentTrackIdx = 0;
+
+    const DB_NAME = "MusicQuestAudioDB";
+    const STORE_NAME = "audioStore";
+
+    function openAudioDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, 3);
+            request.onupgradeneeded = (e) => {
+                const db = e.target.result;
+                if (db.objectStoreNames.contains(STORE_NAME)) {
+                    db.deleteObjectStore(STORE_NAME);
+                }
+                db.createObjectStore(STORE_NAME);
+            };
+            request.onsuccess = (e) => resolve(e.target.result);
+            request.onerror = (e) => reject(e.target.error);
+        });
+    }
+
+    async function savePlaylistToDB(list) {
+        try {
+            const db = await openAudioDB();
+            const tx = db.transaction(STORE_NAME, "readwrite");
+            const store = tx.objectStore(STORE_NAME);
+            // Simpan data mentah ArrayBuffer agar sentiasa boleh diserialisasikan dengan selamat
+            const cleanList = list.map(item => ({
+                name: item.name,
+                type: item.type,
+                buffer: item.buffer
+            }));
+            store.put(cleanList, "customSetlist");
+            return new Promise((resolve) => {
+                tx.oncomplete = () => resolve(true);
+                tx.onerror = () => resolve(false);
+            });
+        } catch (e) {
+            console.error("IndexedDB save error:", e);
+            return false;
+        }
+    }
+
+    async function getPlaylistFromDB() {
+        try {
+            const db = await openAudioDB();
+            const tx = db.transaction(STORE_NAME, "readonly");
+            const store = tx.objectStore(STORE_NAME);
+            const req = store.get("customSetlist");
+            return new Promise((resolve) => {
+                req.onsuccess = () => resolve(req.result || []);
+                req.onerror = () => resolve([]);
+            });
+        } catch (e) {
+            return [];
+        }
+    }
+
+    async function clearPlaylistFromDB() {
+        try {
+            const db = await openAudioDB();
+            const tx = db.transaction(STORE_NAME, "readwrite");
+            const store = tx.objectStore(STORE_NAME);
+            store.delete("customSetlist");
+            return new Promise((resolve) => {
+                tx.oncomplete = () => resolve(true);
+            });
+        } catch (e) {
+            console.error("IndexedDB clear error:", e);
+        }
+    }
+
+    async function initBGM() {
+        const rawTracks = await getPlaylistFromDB();
+        if (rawTracks && rawTracks.length > 0) {
+            // Reconstruct Blob URLs dari ArrayBuffer yang tersimpan dalam IndexedDB
+            playlist = rawTracks.map(track => {
+                const blob = new Blob([track.buffer], { type: track.type || 'audio/mpeg' });
+                return {
+                    name: track.name,
+                    type: track.type || 'audio/mpeg',
+                    buffer: track.buffer,
+                    blobUrl: URL.createObjectURL(blob)
+                };
+            });
+            loadTrack(0);
+        } else {
+            playlist = [];
+            updateAudioStatusUI("audio/bg_music.mp3");
+        }
+
+        if (bgAudio) {
+            bgAudio.addEventListener('ended', playNextTrack);
+        }
+    }
+
+    function loadTrack(index) {
+        if (!playlist || playlist.length === 0) {
+            bgAudio.src = "audio/bg_music.mp3";
+            updateAudioStatusUI("audio/bg_music.mp3");
+            return;
+        }
+
+        if (index >= playlist.length) index = 0;
+        if (index < 0) index = playlist.length - 1;
+
+        currentTrackIdx = index;
+        const track = playlist[currentTrackIdx];
+        bgAudio.src = track.blobUrl;
+
+        updateAudioStatusUI(track.name);
+    }
+
+    function playNextTrack() {
+        playSfx('click');
+        if (playlist.length > 0) {
+            currentTrackIdx = (currentTrackIdx + 1) % playlist.length;
+            loadTrack(currentTrackIdx);
+            playBgAudio();
+        } else {
+            bgAudio.currentTime = 0;
+            playBgAudio();
+        }
+    }
+
+    function playPrevTrack() {
+        playSfx('click');
+        if (playlist.length > 0) {
+            currentTrackIdx = (currentTrackIdx - 1 + playlist.length) % playlist.length;
+            loadTrack(currentTrackIdx);
+            playBgAudio();
+        } else {
+            bgAudio.currentTime = 0;
+            playBgAudio();
+        }
+    }
+
+    async function handleAdminAudioUpload(event) {
+        const files = Array.from(event.target.files);
+        if (!files || files.length === 0) return;
+
+        playSfx('click');
+        
+        // Tukar fail MP3 kepada ArrayBuffer dan simpan dalam IndexedDB
+        const newTracks = [];
+        for (const f of files) {
+            const buffer = await f.arrayBuffer();
+            const blob = new Blob([buffer], { type: f.type || 'audio/mpeg' });
+            const blobUrl = URL.createObjectURL(blob);
+            newTracks.push({
+                name: f.name,
+                type: f.type || 'audio/mpeg',
+                buffer: buffer,
+                blobUrl: blobUrl
+            });
+        }
+
+        playlist = [...playlist, ...newTracks];
+
+        const saved = await savePlaylistToDB(playlist);
+        if (saved) {
+            loadTrack(playlist.length - newTracks.length); // Play fail lagu yang baru ditambah
+            playBgAudio();
+            renderAdminPlaylistUI();
+            
+            alert(`✅ TERTIMPAN KEKAL! ${files.length} fail lagu telah selamat disimpan dalam simpanan pelayar (IndexedDB). Setlist ini akan sentiasa sedia digunakan secara automatik!`);
+        } else {
+            alert("⚠️ Amaran: Gagal menyimpan lagu ke dalam storan pelayar.");
+        }
+    }
+
+    async function deleteTrackFromAdmin(index) {
+        playSfx('click');
+        if (playlist[index] && playlist[index].blobUrl) {
+            URL.revokeObjectURL(playlist[index].blobUrl);
+        }
+        playlist.splice(index, 1);
+        if (playlist.length === 0) {
+            await clearPlaylistFromDB();
+            bgAudio.src = "audio/bg_music.mp3";
+            updateAudioStatusUI("audio/bg_music.mp3");
+        } else {
+            await savePlaylistToDB(playlist);
+            if (currentTrackIdx >= playlist.length) currentTrackIdx = 0;
+            loadTrack(currentTrackIdx);
+        }
+        playBgAudio();
+        renderAdminPlaylistUI();
+    }
+
+    async function resetAdminAudio() {
+        playSfx('click');
+        await clearPlaylistFromDB();
+        playlist = [];
+        currentTrackIdx = 0;
+        bgAudio.src = "audio/bg_music.mp3";
+        playBgAudio();
+        updateAudioStatusUI("audio/bg_music.mp3");
+        renderAdminPlaylistUI();
+        alert("Setlist lagu telah dikosongkan dan ditetapkan semula ke lagu asal.");
+    }
+
+    function updateAudioStatusUI(sourceName) {
+        const infoElem = document.getElementById('adminAudioCurrentInfo');
+        const badgeElem = document.getElementById('audioSourceBadge');
+        const displayElem = document.getElementById('currentTrackDisplay');
+        
+        if (displayElem) {
+            if (playlist.length > 1) {
+                displayElem.innerText = `[${currentTrackIdx + 1}/${playlist.length}] ${sourceName}`;
+            } else {
+                displayElem.innerText = sourceName.includes("bg_music.mp3") ? "Latar Muzik Permainan" : sourceName;
+            }
+        }
+
+        if (infoElem) {
+            if (playlist.length > 0) {
+                infoElem.innerText = `📌 Setlist Aktif (${playlist.length} Lagu) | Sedang Dimainkan: [Lagu ${currentTrackIdx + 1}] ${sourceName}`;
+            } else {
+                infoElem.innerText = `📌 Status Lagu: Fail laluan asal (${sourceName})`;
+            }
+        }
+
+        if (badgeElem) {
+            if (playlist.length === 0) {
+                badgeElem.innerText = "Lagu Asal";
+                badgeElem.className = "bg-blue-600 text-yellow-200 px-2.5 py-0.5 rounded-full font-semibold";
+            } else {
+                badgeElem.innerText = `Setlist Guru (${playlist.length} Lagu)`;
+                badgeElem.className = "bg-green-600 text-white px-2.5 py-0.5 rounded-full font-semibold";
+            }
+        }
+    }
+
+    function renderAdminPlaylistUI() {
+        const container = document.getElementById('adminPlaylistContainer');
+        const itemsList = document.getElementById('adminPlaylistItems');
+        if (!container || !itemsList) return;
+
+        if (playlist.length === 0) {
+            container.classList.add('hidden');
+            itemsList.innerHTML = '';
+            return;
+        }
+
+        container.classList.remove('hidden');
+        itemsList.innerHTML = '';
+
+        playlist.forEach((tr, idx) => {
+            const isCurrent = idx === currentTrackIdx;
+            const item = document.createElement('div');
+            item.className = `flex items-center justify-between p-1.5 px-2.5 rounded-lg text-xs ${isCurrent ? 'bg-yellow-500/30 border border-yellow-400 font-bold text-yellow-300' : 'bg-blue-950/60 text-blue-100'}`;
+            item.innerHTML = `
+                <div class="flex items-center gap-2 truncate pr-2">
+                    <span>${isCurrent ? '▶️' : `${idx + 1}.`}</span>
+                    <span class="truncate">${tr.name}</span>
+                </div>
+                <button onclick="deleteTrackFromAdmin(${idx})" class="text-red-400 hover:text-red-300 font-bold px-1.5 py-0.5 bg-red-950/80 rounded border border-red-500/40 text-[10px]">
+                    <i class="fa-solid fa-trash"></i> Padam
+                </button>
+            `;
+            itemsList.appendChild(item);
+        });
+    }
+
+    // Initialize audio storage on page load
+    window.addEventListener('DOMContentLoaded', () => {
+        initBGM();
+    });
+
+    function playBgAudio() {
+        if (!bgAudio) return;
+        bgAudio.play().then(() => {
+            isMusicPlaying = true;
+            updateMusicUI();
+        }).catch(() => {
+            isMusicPlaying = false;
+            updateMusicUI();
+        });
+    }
+
+    function toggleBgMusic() {
+        if (!bgAudio) return;
+        if (bgAudio.paused) {
+            bgAudio.play().then(() => {
+                isMusicPlaying = true;
+                updateMusicUI();
+            }).catch(() => {});
+        } else {
+            bgAudio.pause();
+            isMusicPlaying = false;
+            updateMusicUI();
+        }
+    }
+
+    function updateMusicUI() {
+        const musicIcon = document.getElementById('musicIcon');
+        const musicText = document.getElementById('musicText');
+        const musicBtn = document.getElementById('musicToggleBtn');
+        if (!musicIcon || !musicText || !bgAudio) return;
+
+        if (!bgAudio.paused) {
+            musicIcon.className = 'fa-solid fa-volume-high';
+            musicText.innerText = 'Muzik: ON';
+            if (musicBtn) musicBtn.className = 'bg-green-500 hover:bg-green-400 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow';
+        } else {
+            musicIcon.className = 'fa-solid fa-volume-xmark';
+            musicText.innerText = 'Muzik: OFF';
+            if (musicBtn) musicBtn.className = 'bg-red-500 hover:bg-red-400 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow';
+        }
+    }
+
+    // Mula main lagu secara automatik apabila murid menekan skrin buat pertama kali
+    window.addEventListener('click', function startAudioOnInteraction() {
+        if (bgAudio && bgAudio.paused) {
+            playBgAudio();
+        }
+    }, { once: true });
+
+    function playSfx(type) {
+        try {
+            if (!audioCtx) audioCtx = new AudioContext();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'click') {
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.08);
+            } else if (type === 'correct') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+                osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.4);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(150, audioCtx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            }
+        } catch(e) {}
+    }
+
+    // --- 3D ISOMETRIC / PARTICLES CANVAS ENGINE ---
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 18 + 10;
+            this.speedY = Math.random() * -1.5 - 0.5;
+            this.symbols = ['🎵', '🎶', '🎼', '♩', '♪', '⭐', '✨'];
+            this.symbol = this.symbols[Math.floor(Math.random() * this.symbols.length)];
+            this.opacity = Math.random() * 0.6 + 0.2;
+        }
+        update() {
+            this.y += this.speedY;
+            if (this.y < -30) {
+                this.y = canvas.height + 20;
+                this.x = Math.random() * canvas.width;
+            }
+        }
+        draw() {
+            ctx.globalAlpha = this.opacity;
+            ctx.font = `${this.size}px sans-serif`;
+            ctx.fillText(this.symbol, this.x, this.y);
+        }
+    }
+
+    for (let i = 0; i < 35; i++) particles.push(new Particle());
+
+    function animateBg() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(animateBg);
+    }
+    animateBg();
+
+    // --- STATE MANAGEMENT ---
+    let studentData = { name: '', class: '' };
+    let quiz1Score = null;
+    let quiz2Score = null;
+    let currentQuizPlaying = 0;
+    let adminRecords = [];
+
+    // --- DATA 25 SOALAN UJIAN 1 (DSKP TAHUN 6) ---
+    const quiz1Questions = [
+        {
+            question: "1. Apakah nilai ketukan bagi not Semibreve ( 𝅝 )?",
+            options: ["A. 1 Ketukan", "B. 2 Ketukan", "C. 3 Ketukan", "D. 4 Ketukan"],
+            correct: 3,
+            explanation: "Not Semibreve ( 𝅝 ) bernilai 4 ketukan."
+        },
+        {
+            question: "2. Berapakah nilai ketukan bagi not Minim Bertitik ( 𝅗𝅥. )?",
+            options: ["A. 2 Ketukan", "B. 3 Ketukan", "C. 4 Ketukan", "D. 1 ½ Ketukan"],
+            correct: 1,
+            explanation: "Minim (2 ketukan) + titik (1 ketukan) = 3 ketukan."
+        },
+        {
+            question: "3. Apakah nama bagi simbol not ini? ( ♩. )",
+            options: ["A. Minim", "B. Krocet Bertitik", "C. Kuaver", "D. Semibreve"],
+            correct: 1,
+            explanation: "Simbol ♩. ialah not Krocet Bertitik yang bernilai 1 ½ ketukan."
+        },
+        {
+            question: "4. Not Minim ( 𝅗𝅥 ) mempunyai nilai ____ ketukan.",
+            options: ["A. 1", "B. 2", "C. 3", "D. 4"],
+            correct: 1,
+            explanation: "Not Minim bernilai 2 ketukan."
+        },
+        {
+            question: "5. Apakah nilai ketukan bagi not Krocet ( ♩ )?",
+            options: ["A. ½ Ketukan", "B. 1 Ketukan", "C. 2 Ketukan", "D. 3 Ketukan"],
+            correct: 1,
+            explanation: "Not Krocet bernilai 1 ketukan."
+        },
+        {
+            question: "6. Not Kuaver ( ♪ ) bernilai ____ ketukan.",
+            options: ["A. ½", "B. 1", "C. 2", "D. 4"],
+            correct: 0,
+            explanation: "Not Kuaver bernilai ½ ketukan."
+        },
+        {
+            question: "7. Balap muzik terdiri daripada berapa garisan selari?",
+            options: ["A. 3 garisan", "B. 4 garisan", "C. 5 garisan", "D. 6 garisan"],
+            correct: 2,
+            explanation: "Balap muzik mengandungi 5 garisan selari."
+        },
+        {
+            question: "8. Terdapat berapa ruang pada sebuah balap muzik?",
+            options: ["A. 3 ruang", "B. 4 ruang", "C. 5 ruang", "D. 2 ruang"],
+            correct: 1,
+            explanation: "Balap muzik mengandungi 4 ruang di antara 5 garisan."
+        },
+        {
+            question: "9. Simbol Clef Trebel ( 🎼 ) diletakkan pada bahagian mana dalam balap?",
+            options: ["A. Di tengah balap", "B. Di akhir balap", "C. Di permulaan balap", "D. Di bawah balap"],
+            correct: 2,
+            explanation: "Clef Trebel sentiasa diletakkan di permulaan balap muzik."
+        },
+        {
+            question: "10. Simbol 𝄻 ialah tanda rehat bagi not...",
+            options: ["A. Semibreve", "B. Minim", "C. Krocet", "D. Kuaver"],
+            correct: 0,
+            explanation: "𝄻 ialah Tanda Rehat Semibreve (bernilai 4 ketukan senyap)."
+        },
+        {
+            question: "11. Apakah nilai ketukan bagi Tanda Rehat Minim ( 𝄼 )?",
+            options: ["A. 1 Ketukan", "B. 2 Ketukan", "C. 3 Ketukan", "D. 4 Ketukan"],
+            correct: 1,
+            explanation: "Tanda Rehat Minim bernilai 2 ketukan."
+        },
+        {
+            question: "12. Tanda Rehat Krocet diwakili oleh simbol...",
+            options: ["A. 𝄻", "B. 𝄼", "C. 𝄾", "D. 𝄿"],
+            correct: 2,
+            explanation: "Simbol 𝄾 ialah Tanda Rehat Krocet."
+        },
+        {
+            question: "13. Simbol 𝄿 ialah tanda rehat bagi not...",
+            options: ["A. Kuaver", "B. Krocet", "C. Minim", "D. Semibreve"],
+            correct: 0,
+            explanation: "𝄿 ialah Tanda Rehat Kuaver bernilai ½ ketukan."
+        },
+        {
+            question: "14. Berapakah jumlah ketukan bagi gabungan not Minim Bertitik + Krocet ( 𝅗𝅥. + ♩ )?",
+            options: ["A. 3 Ketukan", "B. 4 Ketukan", "C. 5 Ketukan", "D. 2 Ketukan"],
+            correct: 1,
+            explanation: "Minim Bertitik (3) + Krocet (1) = 4 ketukan."
+        },
+        {
+            question: "15. Berapakah jumlah ketukan bagi Krocet Bertitik + Kuaver ( ♩. + ♪ )?",
+            options: ["A. 1 Ketukan", "B. 1 ½ Ketukan", "C. 2 Ketukan", "D. 3 Ketukan"],
+            correct: 2,
+            explanation: "Krocet Bertitik (1.5) + Kuaver (0.5) = 2 ketukan."
+        },
+        {
+            question: "16. Apakah fungsi titik (.) yang berada di sebelah kanan not muzik?",
+            options: ["A. Menambah separuh daripada nilai asal not", "B. Mengurangkan nilai not", "C. Mematikan nada not", "D. Menjadikan not dua kali ganda"],
+            correct: 0,
+            explanation: "Titik menambah separuh daripada nilai asal not tersebut."
+        },
+        {
+            question: "17. Kedudukan not pada garisan pertama balap Clef Trebel ialah not...",
+            options: ["A. C", "B. D", "C. E", "D. F"],
+            correct: 2,
+            explanation: "Garisan pertama balap Clef Trebel mewakili not E."
+        },
+        {
+            question: "18. Kedudukan not pada ruang pertama balap Clef Trebel ialah not...",
+            options: ["A. F", "B. A", "C. C", "D. E"],
+            correct: 0,
+            explanation: "Ruang pertama balap Clef Trebel (FACE) mewakili not F."
+        },
+        {
+            question: "19. Apakah maksud meter 4/4 dalam muzik?",
+            options: ["A. 4 ketukan krocet dalam satu bar", "B. 3 ketukan krocet dalam satu bar", "C. 2 ketukan krocet dalam satu bar", "D. 4 ketukan minim dalam satu bar"],
+            correct: 0,
+            explanation: "Meter 4/4 bermaksud terdapat 4 ketukan bernilai krocet dalam setiap bar."
+        },
+        {
+            question: "20. Apakah maksud meter 3/4 dalam muzik?",
+            options: ["A. 2 ketukan krocet dalam satu bar", "B. 3 ketukan krocet dalam satu bar", "C. 4 ketukan krocet dalam satu bar", "D. 3 ketukan minim dalam satu bar"],
+            correct: 1,
+            explanation: "Meter 3/4 bermaksud terdapat 3 ketukan bernilai krocet dalam setiap bar."
+        },
+        {
+            question: "21. Apakah maksud meter 2/4 dalam muzik?",
+            options: ["A. 2 ketukan krocet dalam satu bar", "B. 4 ketukan krocet dalam satu bar", "C. 2 ketukan kuaver dalam satu bar", "D. 1 ketukan minim dalam satu bar"],
+            correct: 0,
+            explanation: "Meter 2/4 bermaksud terdapat 2 ketukan bernilai krocet dalam setiap bar."
+        },
+        {
+            question: "22. Berapakah hasil tolak nilai not Semibreve tolak Minim ( 𝅝 - 𝅗𝅥 )?",
+            options: ["A. 1 Ketukan", "B. 2 Ketukan", "C. 3 Ketukan", "D. 0 Ketukan"],
+            correct: 1,
+            explanation: "Semibreve (4) - Minim (2) = 2 ketukan."
+        },
+        {
+            question: "23. Antara berikut, manakah simbol bagi not Krocet Bertitik?",
+            options: ["A. 𝅗𝅥.", "B. ♩.", "C. ♪.", "D. 𝅝."],
+            correct: 1,
+            explanation: "♩. ialah simbol bagi Krocet Bertitik."
+        },
+        {
+            question: "24. Apakah nilai ketukan bagi Tanda Rehat Krocet Bertitik?",
+            options: ["A. 1 Ketukan", "B. 1 ½ Ketukan", "C. 2 Ketukan", "D. 3 Ketukan"],
+            correct: 1,
+            explanation: "Tanda Rehat Krocet Bertitik bernilai 1 ½ ketukan."
+        },
+        {
+            question: "25. Manakah antara berikut merupakan not yang bernilai 3 ketukan?",
+            options: ["A. Krocet Bertitik", "B. Minim Bertitik", "C. Semibreve", "D. Kuaver"],
+            correct: 1,
+            explanation: "Minim Bertitik bernilai 3 ketukan (Minim 2 + Titik 1)."
+        }
+    ];
+
+    // --- DATA 5 TUGASAN UJIAN 2 (PADANAN INTERAKTIF WITH SVG GRAPHICS) ---
+    const svgNotes = {
+        semibrif: `<svg width="28" height="20" viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="3.5" class="inline-block text-yellow-300"><ellipse cx="16" cy="12" rx="10" ry="6" transform="rotate(-15 16 12)"/></svg>`,
+        minim: `<svg width="20" height="28" viewBox="0 0 24 34" fill="none" stroke="currentColor" class="inline-block text-yellow-300"><ellipse cx="8" cy="23" rx="6" ry="4" transform="rotate(-20 8 23)" stroke-width="3"/><line x1="14" y1="21" x2="14" y2="3" stroke-width="3" stroke-linecap="round"/></svg>`,
+        minimBertitik: `<svg width="26" height="28" viewBox="0 0 32 34" fill="none" stroke="currentColor" class="inline-block text-yellow-300"><ellipse cx="8" cy="23" rx="6" ry="4" transform="rotate(-20 8 23)" stroke-width="3"/><line x1="14" y1="21" x2="14" y2="3" stroke-width="3" stroke-linecap="round"/><circle cx="21" cy="23" r="2.5" fill="currentColor"/></svg>`,
+        krocet: `<svg width="20" height="28" viewBox="0 0 24 34" fill="currentColor" class="inline-block text-yellow-300"><ellipse cx="8" cy="23" rx="6" ry="4" transform="rotate(-20 8 23)"/><line x1="14" y1="21" x2="14" y2="3" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>`,
+        krocetBertitik: `<svg width="26" height="28" viewBox="0 0 32 34" fill="currentColor" class="inline-block text-yellow-300"><ellipse cx="8" cy="23" rx="6" ry="4" transform="rotate(-20 8 23)"/><line x1="14" y1="21" x2="14" y2="3" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="21" cy="23" r="2.5"/></svg>`,
+        kuaver: `<svg width="24" height="28" viewBox="0 0 28 34" fill="currentColor" class="inline-block text-yellow-300"><ellipse cx="8" cy="23" rx="6" ry="4" transform="rotate(-20 8 23)"/><line x1="14" y1="21" x2="14" y2="3" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M14 3 C 20 6, 22 11, 22 17 C 19 12, 16 10, 14 9 Z"/></svg>`,
+        rehatSemibrif: `<svg width="30" height="20" viewBox="0 0 36 24" fill="currentColor" class="inline-block text-cyan-300"><line x1="4" y1="8" x2="32" y2="8" stroke="currentColor" stroke-width="3"/><rect x="11" y="8" width="14" height="7"/></svg>`,
+        rehatMinim: `<svg width="30" height="20" viewBox="0 0 36 24" fill="currentColor" class="inline-block text-cyan-300"><line x1="4" y1="16" x2="32" y2="16" stroke="currentColor" stroke-width="3"/><rect x="11" y="9" width="14" height="7"/></svg>`,
+        rehatKrocet: `<svg width="18" height="26" viewBox="0 0 20 32" fill="currentColor" class="inline-block text-cyan-300"><path d="M10 2 C13 5, 14 8, 11 11 C8 14, 6 16, 9 19 C12 22, 12 25, 8 29 C7 30, 6 30, 5 31 C7 28, 8 26, 6 23 C4 20, 3 18, 6 15 C9 12, 10 10, 7 7 C6 6, 6 4, 10 2 Z"/></svg>`,
+        rehatKuaver: `<svg width="18" height="26" viewBox="0 0 22 32" fill="currentColor" class="inline-block text-cyan-300"><circle cx="8" cy="9" r="3"/><path d="M8 9 Q 14 10 13 13 L 8 27" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`
+    };
+
+    const quiz2Tasks = [
+        {
+            instruction: "Tugasan 1: Padankan Nama Not dengan Nilai Ketukannya",
+            left: [
+                { id: 'l1', text: 'Semibrif', html: `${svgNotes.semibrif} Semibrif` },
+                { id: 'l2', text: 'Minim Bertitik', html: `${svgNotes.minimBertitik} Minim Bertitik` },
+                { id: 'l3', text: 'Krocet Bertitik', html: `${svgNotes.krocetBertitik} Krocet Bertitik` },
+                { id: 'l4', text: 'Kuaver', html: `${svgNotes.kuaver} Kuaver` }
+            ],
+            right: [
+                { id: 'r1', text: '3 Ketukan' },
+                { id: 'r2', text: '4 Ketukan', match: 'l1' },
+                { id: 'r3', text: '½ Ketukan', match: 'l4' },
+                { id: 'r4', text: '1 ½ Ketukan', match: 'l3' }
+            ].map(r => r.match ? r : {...r, match: 'l2'})
+        },
+        {
+            instruction: "Tugasan 2: Padankan Gambar Not dengan Nama Not",
+            left: [
+                { id: 'l1', text: 'Semibrif', html: svgNotes.semibrif },
+                { id: 'l2', text: 'Minim Bertitik', html: svgNotes.minimBertitik },
+                { id: 'l3', text: 'Krocet Bertitik', html: svgNotes.krocetBertitik },
+                { id: 'l4', text: 'Kuaver', html: svgNotes.kuaver }
+            ],
+            right: [
+                { id: 'r1', text: 'Krocet Bertitik', match: 'l3' },
+                { id: 'r2', text: 'Kuaver', match: 'l4' },
+                { id: 'r3', text: 'Semibrif', match: 'l1' },
+                { id: 'r4', text: 'Minim Bertitik', match: 'l2' }
+            ]
+        },
+        {
+            instruction: "Tugasan 3: Padankan Gambar Tanda Istirahat dengan Nama Not",
+            left: [
+                { id: 'l1', text: 'Rehat Semibrif', html: svgNotes.rehatSemibrif },
+                { id: 'l2', text: 'Rehat Minim', html: svgNotes.rehatMinim },
+                { id: 'l3', text: 'Rehat Krocet', html: svgNotes.rehatKrocet },
+                { id: 'l4', text: 'Rehat Kuaver', html: svgNotes.rehatKuaver }
+            ],
+            right: [
+                { id: 'r1', text: 'Rehat Krocet', match: 'l3' },
+                { id: 'r2', text: 'Rehat Semibrif', match: 'l1' },
+                { id: 'r3', text: 'Rehat Kuaver', match: 'l4' },
+                { id: 'r4', text: 'Rehat Minim', match: 'l2' }
+            ]
+        },
+        {
+            instruction: "Tugasan 4: Padankan Istilah & Unsur Muzik dengan Maksud yang Betul",
+            left: [
+                { id: 'l1', text: 'Balap Muzik', html: '🎼 Balap Muzik' },
+                { id: 'l2', text: 'Not Bertitik', html: '⚫ Not Bertitik' },
+                { id: 'l3', text: 'Meter 4/4', html: '⏱️ Meter 4/4' },
+                { id: 'l4', text: 'Garisan 1 Balap', html: '📍 Garisan 1 Balap' }
+            ],
+            right: [
+                { id: 'r1', text: 'Tambah ½ nilai not asal', match: 'l2' },
+                { id: 'r2', text: '5 garisan selari & 4 ruang', match: 'l1' },
+                { id: 'r3', text: 'Kedudukan Not E', match: 'l4' },
+                { id: 'r4', text: '4 ketukan krocet satu bar', match: 'l3' }
+            ]
+        },
+        {
+            instruction: "Tugasan 5: Padankan Gabungan Not dengan Jumlah Ketukan",
+            left: [
+                { id: 'l1', text: 'Minim Bertitik + Krocet', html: `${svgNotes.minimBertitik} + ${svgNotes.krocet}` },
+                { id: 'l2', text: 'Krocet Bertitik + Kuaver', html: `${svgNotes.krocetBertitik} + ${svgNotes.kuaver}` },
+                { id: 'l3', text: 'Semibrif + Minim', html: `${svgNotes.semibrif} + ${svgNotes.minim}` },
+                { id: 'l4', text: 'Krocet + Krocet + Minim', html: `${svgNotes.krocet} + ${svgNotes.krocet} + ${svgNotes.minim}` }
+            ],
+            right: [
+                { id: 'r1', text: '2 Ketukan (1 ½ + ½)', match: 'l2' },
+                { id: 'r2', text: '6 Ketukan (4 + 2)', match: 'l3' },
+                { id: 'r3', text: '4 Ketukan (3 + 1)', match: 'l1' },
+                { id: 'r4', text: '4 Ketukan (1 + 1 + 2)', match: 'l4' }
+            ]
+        }
+    ];
+
+    // --- NAVIGATION FUNCTIONS ---
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
+
+    function startGame() {
+        playSfx('click');
+        playBgAudio();
+        const nameInput = document.getElementById('studentName').value.trim();
+        const classInput = document.getElementById('studentClass').value.trim();
+        const errorMsg = document.getElementById('homeError');
+
+        if (!nameInput || !classInput) {
+            playSfx('wrong');
+            errorMsg.classList.remove('hidden');
+            return;
+        }
+
+        errorMsg.classList.add('hidden');
+        studentData.name = nameInput.toUpperCase();
+        studentData.class = classInput.toUpperCase();
+
+        document.getElementById('welcomeGreeting').innerHTML = `<i class="fa-solid fa-crown mr-2 text-yellow-400"></i>Selamat datang, ${studentData.name}!`;
+        showScreen('screen-menu');
+    }
+
+    function loadAudio(event) {
+        const audio = document.getElementById('bgAudio');
+        const file = event.target.files[0];
+        if (file) {
+            audio.src = URL.createObjectURL(file);
+            audio.play();
+        }
+    }
+
+    // --- UJIAN 1 LOGIC (25 OBJEKTIF WITH RETRY LOGIC) ---
+    let q1CurrentIdx = 0;
+    let q1ScoreTemp = 0;
+    let q1FirstAttempt = true;
+    let q1CompletedCurrent = false;
+
+    function startQuiz1() {
+        playSfx('click');
+        currentQuizPlaying = 1;
+        q1CurrentIdx = 0;
+        q1ScoreTemp = 0;
+        showScreen('screen-quiz1');
+        renderQuiz1Question();
+    }
+
+    function renderQuiz1Question() {
+        q1FirstAttempt = true;
+        q1CompletedCurrent = false;
+
+        const qData = quiz1Questions[q1CurrentIdx];
+
+        document.getElementById('q1-progress').innerText = `Soalan ${q1CurrentIdx + 1}/25`;
+        document.getElementById('q1-text').innerText = qData.question;
+        
+        const optionsDiv = document.getElementById('q1-options');
+        optionsDiv.innerHTML = '';
+
+        const feedbackDiv = document.getElementById('q1-feedback');
+        feedbackDiv.classList.add('hidden');
+        document.getElementById('q1-next-btn').classList.add('hidden');
+
+        qData.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => selectQuiz1Option(idx, btn);
+            optionsDiv.appendChild(btn);
+        });
+    }
+
+    function selectQuiz1Option(idx, btnElement) {
+        if (q1CompletedCurrent) return;
+
+        q1CompletedCurrent = true;
+        const qData = quiz1Questions[q1CurrentIdx];
+        const feedbackDiv = document.getElementById('q1-feedback');
+        const allOptionBtns = document.querySelectorAll('#q1-options .option-btn');
+
+        // Nyahaktifkan semua pilihan jawapan selepas satu pilihan dibuat
+        allOptionBtns.forEach(b => b.style.pointerEvents = 'none');
+
+        if (idx === qData.correct) {
+            // BETUL
+            playSfx('correct');
+            q1ScoreTemp += 2; // 2 Mata diberikan
+            btnElement.classList.add('selected-correct');
+
+            feedbackDiv.className = 'mt-4 p-3 rounded-xl font-bold text-center text-sm bg-green-950/80 border border-green-500 text-green-300';
+            feedbackDiv.innerHTML = `🎉 Syabas! Jawapan kamu betul!<br><span class="text-xs font-normal">${qData.explanation}</span>`;
+        } else {
+            // SALAH - Terus tunjuk penjelasan dan jawapan betul, kemudian benarkan teruskan
+            playSfx('wrong');
+            btnElement.classList.add('disabled-wrong');
+
+            // Tunjukkan pilihan jawapan yang betul untuk rujukan murid
+            if (allOptionBtns[qData.correct]) {
+                allOptionBtns[qData.correct].classList.add('selected-correct');
+            }
+
+            feedbackDiv.className = 'mt-4 p-3 rounded-xl font-bold text-center text-sm bg-red-950/80 border border-red-500 text-red-300';
+            feedbackDiv.innerHTML = `⚠️ Jawapan kurang tepat.<br><span class="text-xs font-normal">${qData.explanation}</span>`;
+        }
+
+        feedbackDiv.classList.remove('hidden');
+        document.getElementById('q1-next-btn').classList.remove('hidden');
+    }
+
+    function nextQuiz1Question() {
+        playSfx('click');
+        q1CurrentIdx++;
+        if (q1CurrentIdx < quiz1Questions.length) {
+            renderQuiz1Question();
+        } else {
+            quiz1Score = q1ScoreTemp;
+            finishSingleQuiz(1, quiz1Score);
+        }
+    }
+
+    // --- UJIAN 2 LOGIC (5 MATCHING TASKS) ---
+    let q2CurrentIdx = 0;
+    let q2ScoreTemp = 0;
+    let selectedLeftId = null;
+    let matchedPairsCount = 0;
+
+    function startQuiz2() {
+        playSfx('click');
+        currentQuizPlaying = 2;
+        q2CurrentIdx = 0;
+        q2ScoreTemp = 0;
+        showScreen('screen-quiz2');
+        renderQuiz2Task();
+    }
+
+    function renderQuiz2Task() {
+        const task = quiz2Tasks[q2CurrentIdx];
+        selectedLeftId = null;
+        matchedPairsCount = 0;
+
+        document.getElementById('q2-progress').innerText = `Tugasan ${q2CurrentIdx + 1}/5`;
+        document.getElementById('q2-instruction').innerText = task.instruction;
+
+        const leftCol = document.getElementById('matching-left');
+        const rightCol = document.getElementById('matching-right');
+        const feedbackDiv = document.getElementById('q2-feedback');
+
+        leftCol.innerHTML = '';
+        rightCol.innerHTML = '';
+        feedbackDiv.classList.add('hidden');
+        document.getElementById('q2-next-btn').classList.add('hidden');
+
+        task.left.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'match-card';
+            div.dataset.id = item.id;
+            div.innerHTML = item.html || item.text;
+            div.onclick = () => selectLeftMatch(item.id, div);
+            leftCol.appendChild(div);
+        });
+
+        let shuffledRight = [...task.right].sort(() => Math.random() - 0.5);
+
+        shuffledRight.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'match-card';
+            div.dataset.id = item.id;
+            div.dataset.match = item.match;
+            div.innerHTML = item.html || item.text;
+            div.onclick = () => selectRightMatch(item.match, div);
+            rightCol.appendChild(div);
+        });
+    }
+
+    function selectLeftMatch(id, element) {
+        if (element.classList.contains('matched')) return;
+        playSfx('click');
+
+        document.querySelectorAll('#matching-left .match-card').forEach(el => {
+            if (!el.classList.contains('matched')) el.classList.remove('selected-left');
+        });
+
+        element.classList.add('selected-left');
+        selectedLeftId = id;
+    }
+
+    function selectRightMatch(expectedMatchId, element) {
+        if (element.classList.contains('matched') || !selectedLeftId) return;
+
+        const leftElement = document.querySelector(`#matching-left .match-card[data-id="${selectedLeftId}"]`);
+
+        if (selectedLeftId === expectedMatchId) {
+            // Betul
+            playSfx('correct');
+            leftElement.classList.remove('selected-left');
+            leftElement.classList.add('matched');
+            element.classList.add('matched');
+            selectedLeftId = null;
+            matchedPairsCount++;
+
+            if (matchedPairsCount === 4) {
+                q2ScoreTemp += 10;
+                const feedbackDiv = document.getElementById('q2-feedback');
+                feedbackDiv.className = 'p-3 rounded-xl font-bold text-center text-sm bg-green-950/80 border border-green-500 text-green-300';
+                feedbackDiv.innerText = 'Syabas! Semua padanan untuk tugasan ini adalah tepat! 🎉';
+                feedbackDiv.classList.remove('hidden');
+                document.getElementById('q2-next-btn').classList.remove('hidden');
+            }
+        } else {
+            // Salah
+            playSfx('wrong');
+            const feedbackDiv = document.getElementById('q2-feedback');
+            feedbackDiv.className = 'p-3 rounded-xl font-bold text-center text-sm bg-red-950/80 border border-red-500 text-red-300';
+            feedbackDiv.innerText = 'Padanan tidak tepat. Sila cuba padankan semula!';
+            feedbackDiv.classList.remove('hidden');
+            setTimeout(() => {
+                if (matchedPairsCount < 4) feedbackDiv.classList.add('hidden');
+            }, 1500);
+        }
+    }
+
+    function nextQuiz2Question() {
+        playSfx('click');
+        q2CurrentIdx++;
+        if (q2CurrentIdx < quiz2Tasks.length) {
+            renderQuiz2Task();
+        } else {
+            quiz2Score = q2ScoreTemp;
+            finishSingleQuiz(2, quiz2Score);
+        }
+    }
+
+    // --- FINISH & RESULTS LOGIC ---
+    function finishSingleQuiz(quizNum, score) {
+        document.getElementById('singleResultTitle').innerText = `Keputusan Ujian ${quizNum}`;
+        document.getElementById('singleResultScore').innerText = `${score} / 50`;
+        document.getElementById('singleResultPercent').innerText = `Peratusan: ${(score / 50) * 100}%`;
+
+        updateAdminRecord();
+        showScreen('screen-single-result');
+    }
+
+    function retryCurrentQuiz() {
+        playSfx('click');
+        if (currentQuizPlaying === 1) startQuiz1();
+        else if (currentQuizPlaying === 2) startQuiz2();
+    }
+
+    function checkOverallCompletion() {
+        playSfx('click');
+        if (quiz1Score !== null && quiz2Score !== null) {
+            showFinalResults();
+        } else {
+            showScreen('screen-menu');
+        }
+    }
+
+    function showFinalResults() {
+        const totalScore = quiz1Score + quiz2Score;
+        const totalPercent = totalScore;
+
+        document.getElementById('resStudentName').innerText = studentData.name;
+        document.getElementById('resStudentClass').innerText = studentData.class;
+        document.getElementById('resScore1').innerText = quiz1Score;
+        document.getElementById('resScore2').innerText = quiz2Score;
+        document.getElementById('resTotalScore').innerText = totalScore;
+        document.getElementById('resTotalPercent').innerText = `${totalPercent}%`;
+
+        let badgeIcon = '';
+        let badgeTitle = '';
+        let badgeDesc = '';
+
+        if (totalScore >= 90) {
+            badgeIcon = '🌟';
+            badgeTitle = 'Lencana Wira Not Muzik';
+            badgeDesc = 'Cemerlang! Anda adalah wira utama yang menguasai semua notasi muzik Tahun 6!';
+        } else if (totalScore >= 70) {
+            badgeIcon = '🥇';
+            badgeTitle = 'Lencana Pakar Not Muzik';
+            badgeDesc = 'Syabas! Penguasaan notasi muzik anda sangat tinggi!';
+        } else if (totalScore >= 50) {
+            badgeIcon = '🥉';
+            badgeTitle = 'Lencana Penjelajah Muzik';
+            badgeDesc = 'Tahniah! Teruskan meneroka dan berlatih lagi!';
+        } else {
+            badgeIcon = '🎖️';
+            badgeTitle = 'Lencana Peserta Hebat';
+            badgeDesc = 'Tahniah atas usaha anda! Mari ulang semula untuk dapatkan lencana lebih tinggi!';
+        }
+
+        document.getElementById('finalBadgeIcon').innerText = badgeIcon;
+        document.getElementById('finalBadgeTitle').innerText = badgeTitle;
+        document.getElementById('finalBadgeDesc').innerText = badgeDesc;
+
+        showScreen('screen-final-result');
+    }
+
+    // --- ADMIN SYSTEM LOGIC ---
+    function openAdminModal() {
+        playSfx('click');
+        document.getElementById('adminPassInput').value = '';
+        document.getElementById('adminPassError').classList.add('hidden');
+        document.getElementById('adminModal').style.display = 'flex';
+    }
+
+    function closeAdminModal() {
+        playSfx('click');
+        document.getElementById('adminModal').style.display = 'none';
+    }
+
+    function verifyAdminPassword() {
+        const pass = document.getElementById('adminPassInput').value;
+        if (pass === "0000") {
+            playSfx('correct');
+            closeAdminModal();
+            renderAdminTable();
+            renderAdminPlaylistUI();
+            showScreen('screen-admin');
+        } else {
+            playSfx('wrong');
+            document.getElementById('adminPassError').classList.remove('hidden');
+        }
+    }
+
+    function updateAdminRecord() {
+        let existingIndex = adminRecords.findIndex(r => r.name === studentData.name && r.class === studentData.class);
+        
+        let recordObj = {
+            name: studentData.name,
+            class: studentData.class,
+            q1: quiz1Score !== null ? `${quiz1Score}/50` : 'Belum Diduduki',
+            q2: quiz2Score !== null ? `${quiz2Score}/50` : 'Belum Diduduki'
+        };
+
+        if (existingIndex > -1) {
+            adminRecords[existingIndex] = recordObj;
+        } else {
+            adminRecords.push(recordObj);
+        }
+    }
+
+    function renderAdminTable() {
+        const tbody = document.getElementById('adminTableBody');
+        tbody.innerHTML = '';
+
+        if (adminRecords.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5">Tiada rekod murid lagi.</td></tr>';
+            return;
+        }
+
+        adminRecords.forEach((rec, idx) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${idx + 1}</td>
+                <td>${rec.name}</td>
+                <td>${rec.class}</td>
+                <td>${rec.q1}</td>
+                <td>${rec.q2}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+</script>
+
+</body>
+</html>
